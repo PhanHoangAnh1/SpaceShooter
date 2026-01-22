@@ -2,97 +2,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-//guns objects in 'Player's' hierarchy
-[System.Serializable]
-public class Guns
+// Giữ nguyên tên class là PlayerShooting để khớp với tên file
+public class PlayerShooting : MonoBehaviour
 {
-    public GameObject rightGun, leftGun, centralGun;
-    [HideInInspector] public ParticleSystem leftGunVFX, rightGunVFX, centralGunVFX; 
-}
+    // Đổi tên biến thành 'bulletPrefab' cho dễ hiểu giống tutorial
+    public GameObject bulletPrefab;
+    
+    // Tốc độ bắn
+    public float shootingInterval = 0.2f;
+    
+    private float lastBulletTime;
 
-public class PlayerShooting : MonoBehaviour {
-
-    [Tooltip("shooting frequency. the higher the more frequent")]
-    public float fireRate;
-
-    [Tooltip("projectile prefab")]
-    public GameObject projectileObject;
-
-    //time for a new shot
-    [HideInInspector] public float nextFire;
-
-
-    [Tooltip("current weapon power")]
-    [Range(1, 4)]       //change it if you wish
-    public int weaponPower = 1; 
-
-    public Guns guns;
-    bool shootingIsActive = true; 
-    [HideInInspector] public int maxweaponPower = 4; 
-    public static PlayerShooting instance;
-
-    private void Awake()
+    void Update()
     {
-        if (instance == null)
-            instance = this;
-    }
-    private void Start()
-    {
-        //receiving shooting visual effects components
-        guns.leftGunVFX = guns.leftGun.GetComponent<ParticleSystem>();
-        guns.rightGunVFX = guns.rightGun.GetComponent<ParticleSystem>();
-        guns.centralGunVFX = guns.centralGun.GetComponent<ParticleSystem>();
-    }
-
-    private void Update()
-    {
-        if (shootingIsActive)
+        // Nếu nhấn chuột trái (0)
+        if (Input.GetMouseButton(0))
         {
-            if (Time.time > nextFire)
+            if (Time.time - lastBulletTime > shootingInterval)
             {
-                MakeAShot();                                                         
-                nextFire = Time.time + 1 / fireRate;
+                Shoot();
+                lastBulletTime = Time.time;
             }
         }
     }
 
-    //method for a shot
-    void MakeAShot() 
+    void Shoot()
     {
-        switch (weaponPower) // according to weapon power 'pooling' the defined anount of projectiles, on the defined position, in the defined rotation
+        if (bulletPrefab != null)
         {
-            case 1:
-                CreateLazerShot(projectileObject, guns.centralGun.transform.position, Vector3.zero);
-                guns.centralGunVFX.Play();
-                break;
-            case 2:
-                CreateLazerShot(projectileObject, guns.rightGun.transform.position, Vector3.zero);
-                guns.leftGunVFX.Play();
-                CreateLazerShot(projectileObject, guns.leftGun.transform.position, Vector3.zero);
-                guns.rightGunVFX.Play();
-                break;
-            case 3:
-                CreateLazerShot(projectileObject, guns.centralGun.transform.position, Vector3.zero);
-                CreateLazerShot(projectileObject, guns.rightGun.transform.position, new Vector3(0, 0, -5));
-                guns.leftGunVFX.Play();
-                CreateLazerShot(projectileObject, guns.leftGun.transform.position, new Vector3(0, 0, 5));
-                guns.rightGunVFX.Play();
-                break;
-            case 4:
-                CreateLazerShot(projectileObject, guns.centralGun.transform.position, Vector3.zero);
-                CreateLazerShot(projectileObject, guns.rightGun.transform.position, new Vector3(0, 0, -5));
-                guns.leftGunVFX.Play();
-                CreateLazerShot(projectileObject, guns.leftGun.transform.position, new Vector3(0, 0, 5));
-                guns.rightGunVFX.Play();
-                CreateLazerShot(projectileObject, guns.leftGun.transform.position, new Vector3(0, 0, 15));
-                CreateLazerShot(projectileObject, guns.rightGun.transform.position, new Vector3(0, 0, -15));
-                break;
+            Instantiate(bulletPrefab, transform.position, transform.rotation);
         }
-    }
-
-    void CreateLazerShot(GameObject lazer, Vector3 pos, Vector3 rot) //translating 'pooled' lazer shot to the defined position in the defined rotation
-    {
-        Instantiate(lazer, pos, Quaternion.Euler(rot));
     }
 }
