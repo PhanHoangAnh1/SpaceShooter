@@ -1,22 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    // Tốc độ bay của đạn (bạn có thể chỉnh số này trong Unity sau)
     public float speed = 10f;
+    public float liveTime = 2f;
+
+    // --- MỚI 1: Biến chứa hiệu ứng nổ ---
+    public GameObject explosionVFX; 
+    // ------------------------------------
+
+    void Start()
+    {
+        Destroy(gameObject, liveTime);
+    }
 
     void Update()
     {
-        // 1. Lấy vị trí hiện tại của viên đạn
-        Vector3 temp = transform.position;
+        transform.Translate(Vector3.up * speed * Time.deltaTime);
+    }
 
-        // 2. Cộng thêm vào trục Y (để bay lên trên)
-        // Time.deltaTime giúp đạn bay mượt mà trên mọi máy
-        temp.y += speed * Time.deltaTime;
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            // --- MỚI 2: Tạo hiệu ứng nổ tại vị trí kẻ địch ---
+            if (explosionVFX != null)
+            {
+                Instantiate(explosionVFX, transform.position, Quaternion.identity);
+            }
+            // -------------------------------------------------
 
-        // 3. Gán vị trí mới cho viên đạn
-        transform.position = temp;
+            Destroy(other.gameObject); // Phá hủy địch
+            Destroy(gameObject);       // Phá hủy đạn
+        }
     }
 }
