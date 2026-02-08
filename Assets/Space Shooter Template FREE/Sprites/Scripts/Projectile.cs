@@ -1,42 +1,50 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
-/// Defines the damage and defines whether the projectile belongs to the ‘Enemy’ or to the ‘Player’, whether the projectile is destroyed in the collision, or not and amount of damage.
-/// </summary>
+﻿using UnityEngine;
 
 public class Projectile : MonoBehaviour {
+    public int damage = 1;
+    public bool enemyBullet; // Đạn của ai? (Tích = Địch, Không tích = Player)
+    public bool destroyedByCollision = true;
 
-    [Tooltip("Damage which a projectile deals to another object. Integer")]
-    public int damage;
-
-    [Tooltip("Whether the projectile belongs to the ‘Enemy’ or to the ‘Player’")]
-    public bool enemyBullet;
-
-    [Tooltip("Whether the projectile is destroyed in the collision, or not")]
-    public bool destroyedByCollision;
-
-    private void OnTriggerEnter2D(Collider2D collision) //when a projectile collides with another object
+    private void OnTriggerEnter2D(Collider2D collision) 
     {
-        if (enemyBullet && collision.tag == "Player") //if anoter object is 'player' or 'enemy sending the command of receiving the damage
-        {
-            Player.instance.GetDamage(damage); 
-            if (destroyedByCollision)
-                Destruction();
-        }
-        else if (!enemyBullet && collision.tag == "Enemy")
-        {
-            collision.GetComponent<Enemy>().GetDamage(damage);
-            if (destroyedByCollision)
-                Destruction();
-        }
-    }
+        // --- MÁY DÒ BẮT ĐẦU ---
+        Debug.Log("Va chạm với: " + collision.gameObject.name + " | Tag: " + collision.tag);
 
-    void Destruction() 
-    {
-        Destroy(gameObject);
+        if (enemyBullet) 
+        {
+            // Logic cho đạn của Địch
+            if (collision.CompareTag("Player"))
+            {
+                Debug.Log("Đạn địch trúng Player!");
+                var player = collision.GetComponent<PlayerHealth>();
+                if (player) player.TakeDamage(damage);
+                if (destroyedByCollision) Destroy(gameObject);
+            }
+        }
+        else 
+        {
+            // Logic cho đạn của Player (CHÚ Ý CHỖ NÀY)
+            if (collision.CompareTag("Enemy"))
+            {
+                Debug.Log("Đạn Player trúng Enemy!"); // <-- Nếu dòng này hiện ra, logic đúng
+                var enemy = collision.GetComponent<EnemyHealth>();
+                
+                if (enemy != null)
+                {
+                    Debug.Log("Đã tìm thấy script EnemyHealth -> Trừ máu!");
+                    enemy.TakeDamage(damage);
+                }
+                else
+                {
+                    Debug.LogError("LỖI: Object có tag Enemy nhưng KHÔNG CÓ script EnemyHealth!");
+                }
+
+                if (destroyedByCollision) Destroy(gameObject);
+            }
+            else
+            {
+                Debug.Log("Đạn trúng cái gì đó không phải Enemy. Tag là: " + collision.tag);
+            }
+        }
     }
 }
-
-
