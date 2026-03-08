@@ -6,6 +6,13 @@ public class EnemyHealth : Health
     {
         base.Die();
         Debug.Log("Enemy died");
-        // Có thể thêm logic tăng điểm số ở đây
+        
+        // --- LOGIC TĂNG ĐIỂM ---
+        GameManager gm = FindObjectOfType<GameManager>();
+        if (gm != null)
+        {
+            gm.AddScore(1); // Cộng 1 điểm mỗi khi Enemy này nổ
+        }
+        // -----------------------
     }
 }

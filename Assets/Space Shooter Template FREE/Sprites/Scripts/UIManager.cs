@@ -1,18 +1,29 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Để load lại màn chơi
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
     public GameObject gameOverPanel;
+    
+    // --- MỚI: Thêm biến chứa bảng Win ---
+    public GameObject winPanel; 
 
     public void ShowGameOver()
     {
-        gameOverPanel.SetActive(true); // Hiện bảng Game Over
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+        Time.timeScale = 0f; // Dừng thời gian khi thua
+    }
+
+    // --- MỚI: Hàm hiện bảng Thắng ---
+    public void ShowGameWin()
+    {
+        if (winPanel != null) winPanel.SetActive(true);
+        Time.timeScale = 0f; // Dừng thời gian khi thắng
     }
 
     public void ReplayGame()
     {
-        // Load lại màn hình hiện tại
+        Time.timeScale = 1f; // Trả lại thời gian bình thường trước khi chơi lại
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
