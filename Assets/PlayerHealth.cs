@@ -1,14 +1,19 @@
 using UnityEngine;
 
-public class PlayerHealth : Health // Kế thừa từ class Health bạn đã viết
+public class PlayerHealth : Health 
 {
-    // Ghi đè hàm Die để xử lý riêng cho Player
     protected override void Die()
     {
-        base.Die(); // Gọi logic nổ mặc định (tạo hiệu ứng nổ)
+        base.Die(); // Tạo hiệu ứng nổ và biến mất
+
+        // --- MỚI: Gọi bảng Game Over hiện lên ---
+        // Chúng ta tìm script UIManager trong cảnh và bảo nó chạy hàm ShowGameOver
+        UIManager ui = FindObjectOfType<UIManager>();
+        if (ui != null)
+        {
+            ui.ShowGameOver();
+        }
         
         Debug.Log("GAME OVER!"); 
-        // Sau này bạn sẽ thêm code hiện bảng Game Over ở đây
-        // Ví dụ: UIManager.instance.ShowGameOver();
     }
 }
