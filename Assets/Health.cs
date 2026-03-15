@@ -2,27 +2,26 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    public GameObject explosionPrefab; // Prefab hiệu ứng nổ
-    public int defaultHealthPoint;     // Máu mặc định
-    private int healthPoint;
+    public GameObject explosionPrefab; 
+    public int defaultHealthPoint;     
+    protected int healthPoint; // (Đã đổi thành protected để class con nhìn thấy)
 
     private void Start() => healthPoint = defaultHealthPoint;
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage) // (Đã thêm virtual)
     {
         if (healthPoint <= 0) return;
         healthPoint -= damage;
         if (healthPoint <= 0) Die();
     }
 
-    protected virtual void Die()
+    protected virtual void Die() // (Đã có virtual)
     {
-        // Tạo hiệu ứng nổ tại vị trí chết
         if (explosionPrefab != null)
         {
             var explosion = Instantiate(explosionPrefab, transform.position, transform.rotation);
-            Destroy(explosion, 1f); // Hủy hiệu ứng nổ sau 1 giây
+            Destroy(explosion, 1f); 
         }
-        Destroy(gameObject); // Hủy đối tượng game
+        Destroy(gameObject); 
     }
 }

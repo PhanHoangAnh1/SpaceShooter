@@ -1235,7 +1235,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   gameOverPanel: {fileID: 797532577}
-  winPanel: {fileID: 0}
+  winPanel: {fileID: 1596194411}
 --- !u!114 &1388329075
 MonoBehaviour:
   m_ObjectHideFlags: 0
